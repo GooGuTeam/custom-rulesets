@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - '*'
   schedule:
     - cron: '0 0 * * *'
 
@@ -86,6 +88,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     needs: build
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -97,9 +100,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          today=$(date -u '+%Y.%-m%02d')
-          existing=$(gh api repos/${GITHUB_REPOSITORY}/releases --paginate -F per_page=100 --jq "[.[].tag_name | select(startswith(\"${today}.\"))] | length")
-          tag="${today}.${existing}"
+          set -e
+          tag="${GITHUB_REF_NAME}"
+          if [ -z "$tag" ]; then
+            echo "Failed to determine release tag" >&2
+            exit 1
+          fi
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
 
       - name: Publish release
