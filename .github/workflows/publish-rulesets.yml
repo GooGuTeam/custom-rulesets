@@ -1,0 +1,107 @@
+name: Publish Ruleset DLLs
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: tau
+            repository: taulazer/tau
+            patch: patch-tau.patch
+            project: osu.Game.Rulesets.Tau/osu.Game.Rulesets.Tau.csproj
+          - id: sentakki
+            repository: LumpBloom7/sentakki
+            patch: patch-sentakki.patch
+            project: osu.Game.Rulesets.Sentakki/osu.Game.Rulesets.Sentakki.csproj
+          - id: rush
+            repository: Beamographic/rush
+            patch: patch-rush.patch
+            project: osu.Game.Rulesets.Rush/osu.Game.Rulesets.Rush.csproj
+          - id: hishigata
+            repository: LumpBloom7/hishigata
+            patch: patch-hishigata.patch
+            project: osu.Game.Rulesets.Hishigata/osu.Game.Rulesets.Hishigata.csproj
+          - id: soyokaze
+            repository: goodtrailer/soyokaze
+            patch: patch-soyokaze!.patch
+            project: osu.Game.Rulesets.Soyokaze/osu.Game.Rulesets.Soyokaze.csproj
+    steps:
+      - name: Checkout workflow repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Checkout ${{ matrix.id }} repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repository }}
+          path: repos/${{ matrix.id }}
+
+      - name: Apply patch
+        run: |
+          git -C repos/${{ matrix.id }} apply < "${{ github.workspace }}/${{ matrix.patch }}"
+
+      - name: Restore and publish
+        working-directory: repos/${{ matrix.id }}
+        run: |
+          dotnet restore "${{ matrix.project }}"
+          dotnet publish "${{ matrix.project }}" --configuration Release --output "${{ github.workspace }}/build/${{ matrix.id }}"
+
+      - name: Package artifact
+        run: |
+          mkdir -p artifacts
+          (cd build/${{ matrix.id }} && zip -r "${{ github.workspace }}/artifacts/${{ matrix.id }}.zip" .)
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.id }}
+          path: artifacts/${{ matrix.id }}.zip
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+
+      - name: Determine release tag
+        id: version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          today=$(date -u '+%Y.%-m%02d')
+          existing=$(gh api repos/${GITHUB_REPOSITORY}/releases --paginate -F per_page=100 --jq "[.[].tag_name | select(startswith(\"${today}.\"))] | length")
+          tag="${today}.${existing}"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ steps.version.outputs.tag }}
+        run: |
+          notes="Automated release generated on $(date -u '+%Y-%m-%d')."
+          shopt -s nullglob
+          assets=(release-assets/*/*.zip)
+          if [ ${#assets[@]} -eq 0 ]; then
+            echo "No assets found to upload" >&2
+            exit 1
+          fi
+          gh release create "$TAG_NAME" "${assets[@]}" --title "$TAG_NAME" --notes "$notes"

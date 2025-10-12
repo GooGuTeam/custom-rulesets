@@ -1,0 +1,58 @@
+diff --git a/osu.Game.Rulesets.Sentakki/Difficulty/SentakkiLegacyScoreSimulator.cs b/osu.Game.Rulesets.Sentakki/Difficulty/SentakkiLegacyScoreSimulator.cs
+new file mode 100644
+index 00000000..667faf2d
+--- /dev/null
++++ b/osu.Game.Rulesets.Sentakki/Difficulty/SentakkiLegacyScoreSimulator.cs
+@@ -0,0 +1,26 @@
++using System.Collections.Generic;
++using osu.Game.Beatmaps;
++using osu.Game.Rulesets.Mods;
++using osu.Game.Rulesets.Scoring.Legacy;
++
++namespace osu.Game.Rulesets.Sentakki.Difficulty;
++
++public class SentakkiLegacyScoreSimulator : ILegacyScoreSimulator
++{
++    public LegacyScoreAttributes Simulate(IWorkingBeatmap workingBeatmap, IBeatmap playableBeatmap)
++    {
++        throw new System.NotImplementedException();
++    }
++
++    public double GetLegacyScoreMultiplier(IReadOnlyList<Mod> mods, LegacyBeatmapConversionDifficultyInfo difficulty)
++    {
++        double multiplier = 1.0;
++
++        foreach (var mod in mods)
++        {
++            multiplier *= mod.ScoreMultiplier;
++        }
++
++        return multiplier;
++    }
++}
+diff --git a/osu.Game.Rulesets.Sentakki/SentakkiRuleset.cs b/osu.Game.Rulesets.Sentakki/SentakkiRuleset.cs
+index e5a7a89a..d9321520 100644
+--- a/osu.Game.Rulesets.Sentakki/SentakkiRuleset.cs
++++ b/osu.Game.Rulesets.Sentakki/SentakkiRuleset.cs
+@@ -21,6 +21,7 @@
+ using osu.Game.Rulesets.Mods;
+ using osu.Game.Rulesets.Replays.Types;
+ using osu.Game.Rulesets.Scoring;
++using osu.Game.Rulesets.Scoring.Legacy;
+ using osu.Game.Rulesets.Sentakki.Beatmaps;
+ using osu.Game.Rulesets.Sentakki.Configuration;
+ using osu.Game.Rulesets.Sentakki.Difficulty;
+@@ -40,8 +41,12 @@
+ 
+ namespace osu.Game.Rulesets.Sentakki;
+ 
+-public partial class SentakkiRuleset : Ruleset
++public partial class SentakkiRuleset : Ruleset, ILegacyRuleset
+ {
++    public ILegacyScoreSimulator CreateLegacyScoreSimulator() => new SentakkiLegacyScoreSimulator();
++
++    public int LegacyID => 10;
++
+     public override string RulesetAPIVersionSupported => CURRENT_RULESET_API_VERSION;
+ 
+     private static readonly Lazy<bool> is_development_build

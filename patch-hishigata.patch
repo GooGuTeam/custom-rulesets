@@ -1,0 +1,65 @@
+diff --git a/osu.Game.Rulesets.Hishigata/Difficulty/HishigataLegacyScoreSimulator.cs b/osu.Game.Rulesets.Hishigata/Difficulty/HishigataLegacyScoreSimulator.cs
+new file mode 100644
+index 0000000..d21a9c1
+--- /dev/null
++++ b/osu.Game.Rulesets.Hishigata/Difficulty/HishigataLegacyScoreSimulator.cs
+@@ -0,0 +1,26 @@
++using System.Collections.Generic;
++using osu.Game.Beatmaps;
++using osu.Game.Rulesets.Mods;
++using osu.Game.Rulesets.Scoring.Legacy;
++
++namespace osu.Game.Rulesets.Hishigata.Difficulty;
++
++public class HishigataLegacyScoreSimulator : ILegacyScoreSimulator
++{
++    public LegacyScoreAttributes Simulate(IWorkingBeatmap workingBeatmap, IBeatmap playableBeatmap)
++    {
++        throw new System.NotImplementedException();
++    }
++
++    public double GetLegacyScoreMultiplier(IReadOnlyList<Mod> mods, LegacyBeatmapConversionDifficultyInfo difficulty)
++    {
++        double multiplier = 1.0;
++
++        foreach (var mod in mods)
++        {
++            multiplier *= mod.ScoreMultiplier;
++        }
++
++        return multiplier;
++    }
++}
+diff --git a/osu.Game.Rulesets.Hishigata/HishigataRuleset.cs b/osu.Game.Rulesets.Hishigata/HishigataRuleset.cs
+index 24b28a5..113d0da 100644
+--- a/osu.Game.Rulesets.Hishigata/HishigataRuleset.cs
++++ b/osu.Game.Rulesets.Hishigata/HishigataRuleset.cs
+@@ -17,13 +17,18 @@
+ using osu.Game.Rulesets.Mods;
+ using osu.Game.Rulesets.Replays.Types;
+ using osu.Game.Rulesets.Scoring;
++using osu.Game.Rulesets.Scoring.Legacy;
+ using osu.Game.Rulesets.UI;
+ using osuTK;
+ 
+ namespace osu.Game.Rulesets.Hishigata
+ {
+-    public class HishigataRuleset : Ruleset
++    public class HishigataRuleset : Ruleset, ILegacyRuleset
+     {
++        public ILegacyScoreSimulator CreateLegacyScoreSimulator() => new HishigataLegacyScoreSimulator();
++
++        public int LegacyID => 13;
++
+         public override string RulesetAPIVersionSupported => CURRENT_RULESET_API_VERSION;
+ 
+         public override string Description => "hishigata";
+@@ -113,7 +118,7 @@ public override IEnumerable<KeyBinding> GetDefaultKeyBindings(int variant = 0) =
+                     Origin = Anchor.Centre,
+                     Icon = FontAwesome.Solid.ChevronUp,
+                     Size = new Vector2(25),
+-                    Position = new Vector2(0,-2f)
++                    Position = new Vector2(0, -2f)
+                 },
+             }
+         };

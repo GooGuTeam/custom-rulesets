@@ -1,0 +1,64 @@
+diff --git a/osu.Game.Rulesets.Rush/Difficulty/RushLegacyScoreSimulator.cs b/osu.Game.Rulesets.Rush/Difficulty/RushLegacyScoreSimulator.cs
+new file mode 100644
+index 0000000..5c930ea
+--- /dev/null
++++ b/osu.Game.Rulesets.Rush/Difficulty/RushLegacyScoreSimulator.cs
+@@ -0,0 +1,27 @@
++using System.Collections.Generic;
++using osu.Game.Beatmaps;
++using osu.Game.Rulesets.Mods;
++using osu.Game.Rulesets.Scoring.Legacy;
++
++namespace osu.Game.Rulesets.Rush.Difficulty
++{
++    public class RushLegacyScoreSimulator : ILegacyScoreSimulator
++    {
++        public LegacyScoreAttributes Simulate(IWorkingBeatmap workingBeatmap, IBeatmap playableBeatmap)
++        {
++            throw new System.NotImplementedException();
++        }
++
++        public double GetLegacyScoreMultiplier(IReadOnlyList<Mod> mods, LegacyBeatmapConversionDifficultyInfo difficulty)
++        {
++            double multiplier = 1.0;
++
++            foreach (var mod in mods)
++            {
++                multiplier *= mod.ScoreMultiplier;
++            }
++
++            return multiplier;
++        }
++    }
++}
+diff --git a/osu.Game.Rulesets.Rush/RushRuleset.cs b/osu.Game.Rulesets.Rush/RushRuleset.cs
+index 4e80fc7..e4d299d 100644
+--- a/osu.Game.Rulesets.Rush/RushRuleset.cs
++++ b/osu.Game.Rulesets.Rush/RushRuleset.cs
+@@ -17,19 +17,25 @@
+ using osu.Game.Rulesets.Replays.Types;
+ using osu.Game.Rulesets.Rush.Beatmaps;
+ using osu.Game.Rulesets.Rush.Configuration;
++using osu.Game.Rulesets.Rush.Difficulty;
+ using osu.Game.Rulesets.Rush.Input;
+ using osu.Game.Rulesets.Rush.Mods;
+ using osu.Game.Rulesets.Rush.Replays;
+ using osu.Game.Rulesets.Rush.Scoring;
+ using osu.Game.Rulesets.Rush.UI;
+ using osu.Game.Rulesets.Scoring;
++using osu.Game.Rulesets.Scoring.Legacy;
+ using osu.Game.Rulesets.UI;
+ using osuTK;
+ 
+ namespace osu.Game.Rulesets.Rush
+ {
+-    public partial class RushRuleset : Ruleset
++    public partial class RushRuleset : Ruleset, ILegacyRuleset
+     {
++        public ILegacyScoreSimulator CreateLegacyScoreSimulator() => new RushLegacyScoreSimulator();
++
++        public int LegacyID => 12;
++
+         public override string RulesetAPIVersionSupported => CURRENT_RULESET_API_VERSION;
+ 
+         public const string SHORT_NAME = "rush";

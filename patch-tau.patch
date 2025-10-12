@@ -1,0 +1,58 @@
+diff --git a/osu.Game.Rulesets.Tau/Difficulty/TauLegacyScoreSimulator.cs b/osu.Game.Rulesets.Tau/Difficulty/TauLegacyScoreSimulator.cs
+new file mode 100644
+index 0000000..72629ab
+--- /dev/null
++++ b/osu.Game.Rulesets.Tau/Difficulty/TauLegacyScoreSimulator.cs
+@@ -0,0 +1,26 @@
++using System.Collections.Generic;
++using osu.Game.Beatmaps;
++using osu.Game.Rulesets.Mods;
++using osu.Game.Rulesets.Scoring.Legacy;
++
++namespace osu.Game.Rulesets.Tau.Difficulty;
++
++public class TauLegacyScoreSimulator : ILegacyScoreSimulator
++{
++    public LegacyScoreAttributes Simulate(IWorkingBeatmap workingBeatmap, IBeatmap playableBeatmap)
++    {
++        throw new System.NotImplementedException();
++    }
++
++    public double GetLegacyScoreMultiplier(IReadOnlyList<Mod> mods, LegacyBeatmapConversionDifficultyInfo difficulty)
++    {
++        double multiplier = 1.0;
++
++        foreach (var mod in mods)
++        {
++            multiplier *= mod.ScoreMultiplier;
++        }
++
++        return multiplier;
++    }
++}
+diff --git a/osu.Game.Rulesets.Tau/TauRuleset.cs b/osu.Game.Rulesets.Tau/TauRuleset.cs
+index 80560e5..3401cc4 100644
+--- a/osu.Game.Rulesets.Tau/TauRuleset.cs
++++ b/osu.Game.Rulesets.Tau/TauRuleset.cs
+@@ -16,6 +16,7 @@
+ using osu.Game.Rulesets.Mods;
+ using osu.Game.Rulesets.Replays.Types;
+ using osu.Game.Rulesets.Scoring;
++using osu.Game.Rulesets.Scoring.Legacy;
+ using osu.Game.Rulesets.Tau.Beatmaps;
+ using osu.Game.Rulesets.Tau.Configuration;
+ using osu.Game.Rulesets.Tau.Difficulty;
+@@ -32,8 +33,12 @@
+ 
+ namespace osu.Game.Rulesets.Tau
+ {
+-    public partial class TauRuleset : Ruleset
++    public partial class TauRuleset : Ruleset, ILegacyRuleset
+     {
++        public ILegacyScoreSimulator CreateLegacyScoreSimulator() => new TauLegacyScoreSimulator();
++
++        public int LegacyID => 11;
++
+         public const string SHORT_NAME = "tau";
+ 
+         public override string RulesetAPIVersionSupported => CURRENT_RULESET_API_VERSION;

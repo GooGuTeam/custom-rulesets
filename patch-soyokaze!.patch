@@ -1,0 +1,58 @@
+diff --git a/osu.Game.Rulesets.Soyokaze/Difficulty/SoyokazeLegacyScoreSimulator.cs b/osu.Game.Rulesets.Soyokaze/Difficulty/SoyokazeLegacyScoreSimulator.cs
+new file mode 100644
+index 0000000..6eaf3c5
+--- /dev/null
++++ b/osu.Game.Rulesets.Soyokaze/Difficulty/SoyokazeLegacyScoreSimulator.cs
+@@ -0,0 +1,26 @@
++using System.Collections.Generic;
++using osu.Game.Beatmaps;
++using osu.Game.Rulesets.Mods;
++using osu.Game.Rulesets.Scoring.Legacy;
++
++namespace osu.Game.Rulesets.Soyokaze.Difficulty;
++
++public class SoyokazeLegacyScoreSimulator : ILegacyScoreSimulator
++{
++    public LegacyScoreAttributes Simulate(IWorkingBeatmap workingBeatmap, IBeatmap playableBeatmap)
++    {
++        throw new System.NotImplementedException();
++    }
++
++    public double GetLegacyScoreMultiplier(IReadOnlyList<Mod> mods, LegacyBeatmapConversionDifficultyInfo difficulty)
++    {
++        double multiplier = 1.0;
++
++        foreach (var mod in mods)
++        {
++            multiplier *= mod.ScoreMultiplier;
++        }
++
++        return multiplier;
++    }
++}
+diff --git a/osu.Game.Rulesets.Soyokaze/SoyokazeRuleset.cs b/osu.Game.Rulesets.Soyokaze/SoyokazeRuleset.cs
+index d92a94f..dc06a6c 100644
+--- a/osu.Game.Rulesets.Soyokaze/SoyokazeRuleset.cs
++++ b/osu.Game.Rulesets.Soyokaze/SoyokazeRuleset.cs
+@@ -20,6 +20,7 @@ using osu.Game.Rulesets.Difficulty;
+ using osu.Game.Rulesets.Mods;
+ using osu.Game.Rulesets.Replays.Types;
+ using osu.Game.Rulesets.Scoring;
++using osu.Game.Rulesets.Scoring.Legacy;
+ using osu.Game.Rulesets.Soyokaze.Beatmaps;
+ using osu.Game.Rulesets.Soyokaze.Configuration;
+ using osu.Game.Rulesets.Soyokaze.Difficulty;
+@@ -39,8 +40,12 @@ using osuTK;
+ 
+ namespace osu.Game.Rulesets.Soyokaze
+ {
+-    public partial class SoyokazeRuleset : Ruleset
++    public partial class SoyokazeRuleset : Ruleset, ILegacyRuleset
+     {
++        public ILegacyScoreSimulator CreateLegacyScoreSimulator() => new SoyokazeLegacyScoreSimulator();
++
++        public int LegacyID => 14;
++
+         public const string SHORT_NAME = "soyokaze";
+ 
+         public override string Description => "soyokaze!";
