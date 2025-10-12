@@ -21,22 +21,27 @@ jobs:
             repository: taulazer/tau
             patch: patch-tau.patch
             project: osu.Game.Rulesets.Tau/osu.Game.Rulesets.Tau.csproj
+            dll: osu.Game.Rulesets.Tau.dll
           - id: sentakki
             repository: LumpBloom7/sentakki
             patch: patch-sentakki.patch
             project: osu.Game.Rulesets.Sentakki/osu.Game.Rulesets.Sentakki.csproj
+            dll: osu.Game.Rulesets.Sentakki.dll
           - id: rush
             repository: Beamographic/rush
             patch: patch-rush.patch
             project: osu.Game.Rulesets.Rush/osu.Game.Rulesets.Rush.csproj
+            dll: osu.Game.Rulesets.Rush.dll
           - id: hishigata
             repository: LumpBloom7/hishigata
             patch: patch-hishigata.patch
             project: osu.Game.Rulesets.Hishigata/osu.Game.Rulesets.Hishigata.csproj
+            dll: osu.Game.Rulesets.Hishigata.dll
           - id: soyokaze
             repository: goodtrailer/soyokaze
             patch: patch-soyokaze!.patch
             project: osu.Game.Rulesets.Soyokaze/osu.Game.Rulesets.Soyokaze.csproj
+            dll: osu.Game.Rulesets.Soyokaze.dll
     steps:
       - name: Checkout workflow repository
         uses: actions/checkout@v4
@@ -62,16 +67,21 @@ jobs:
           dotnet restore "${{ matrix.project }}"
           dotnet publish "${{ matrix.project }}" --configuration Release --output "${{ github.workspace }}/build/${{ matrix.id }}"
 
-      - name: Package artifact
+      - name: Collect ruleset DLL
         run: |
-          mkdir -p artifacts
-          (cd build/${{ matrix.id }} && zip -r "${{ github.workspace }}/artifacts/${{ matrix.id }}.zip" .)
+          mkdir -p artifacts/${{ matrix.id }}
+          source="build/${{ matrix.id }}/${{ matrix.dll }}"
+          if [ ! -f "$source" ]; then
+            echo "Expected DLL not found at $source" >&2
+            exit 1
+          fi
+          cp "$source" "artifacts/${{ matrix.id }}/${{ matrix.dll }}"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.id }}
-          path: artifacts/${{ matrix.id }}.zip
+          path: artifacts/${{ matrix.id }}
 
   release:
     runs-on: ubuntu-latest
@@ -99,7 +109,7 @@ jobs:
         run: |
           notes="Automated release generated on $(date -u '+%Y-%m-%d')."
           shopt -s nullglob
-          assets=(release-assets/*/*.zip)
+          assets=(release-assets/*/*.dll)
           if [ ${#assets[@]} -eq 0 ]; then
             echo "No assets found to upload" >&2
             exit 1
