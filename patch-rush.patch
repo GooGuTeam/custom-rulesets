@@ -3,7 +3,10 @@ new file mode 100644
 index 0000000..5c930ea
 --- /dev/null
 +++ b/osu.Game.Rulesets.Rush/Difficulty/RushLegacyScoreSimulator.cs
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,30 @@
++// Copyright (c) Shane Woolcock. Licensed under the MIT Licence.
++// See the LICENCE file in the repository root for full licence text.
++
 +using System.Collections.Generic;
 +using osu.Game.Beatmaps;
 +using osu.Game.Rulesets.Mods;
