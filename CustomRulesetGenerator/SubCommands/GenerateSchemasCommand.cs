@@ -36,47 +36,43 @@ namespace CustomRulesetGenerator.SubCommands
 
             IEnumerable<Ruleset> rulesets = rulesetManager.GetAllRulesets();
 
-            var settings = new NewtonsoftJsonSchemaGeneratorSettings();
-            var generator = new JsonSchemaGenerator(settings);
-            JsonSchema schema = new() { Title = "osu! Attribute models", Type = JsonObjectType.Object };
+            NewtonsoftJsonSchemaGeneratorSettings settings = new()
+            {
+                FlattenInheritanceHierarchy = false, SchemaType = SchemaType.JsonSchema
+            };
+            JsonSchemaGenerator generator = new(settings);
+            JsonSchema schema = new() { Title = "osu! Attribute models", };
             IEnumerable<Tuple<Type?, Type?, string>> types = rulesets.Select(GetAttributeTypesForRuleset).Distinct();
 
+            JsonSchema perfBaseSchema = generator.Generate(typeof(PerformanceAttributes));
+            perfBaseSchema.Title = nameof(PerformanceAttributes);
+            perfBaseSchema.AllowAdditionalProperties = true;
+            foreach (KeyValuePair<string, JsonSchemaProperty> prop in perfBaseSchema.Properties)
+            {
+                prop.Value.IsRequired = true;
+            }
+
+            schema.Definitions.Add(nameof(PerformanceAttributes), perfBaseSchema);
+
+            JsonSchema diffBaseSchema = generator.Generate(typeof(DifficultyAttributes));
+            diffBaseSchema.Title = nameof(DifficultyAttributes);
+            diffBaseSchema.AllowAdditionalProperties = true;
+            foreach (KeyValuePair<string, JsonSchemaProperty> prop in diffBaseSchema.Properties)
+            {
+                prop.Value.IsRequired = true;
+            }
+
+            schema.Definitions.Add(nameof(DifficultyAttributes), diffBaseSchema);
 
             foreach ((Type? performanceType, Type? difficultyType, string rulesetName) in types)
             {
-                Type type;
-                string name;
-                if (performanceType != null)
-                {
-                    type = performanceType;
-                    name = performanceType.Name;
-                }
-                else
-                {
-                    type = typeof(PerformanceAttributes);
-                    name = $"{Capitalize(rulesetName)}{nameof(PerformanceAttributes)}";
-                }
+                JsonSchema performanceSchema = GeneratePerformanceAttributesSchema(generator, rulesetName,
+                    performanceType, ref perfBaseSchema);
+                schema.Definitions.Add(performanceSchema.Title!, performanceSchema);
 
-                JsonSchema performanceSchema = generator.Generate(type);
-                performanceSchema.Title = name;
-                performanceSchema.AllowAdditionalProperties = true;
-                schema.Definitions.Add(name, performanceSchema);
-
-                if (difficultyType != null)
-                {
-                    type = difficultyType;
-                    name = difficultyType.Name;
-                }
-                else
-                {
-                    type = typeof(DifficultyAttributes);
-                    name = $"{Capitalize(rulesetName)}{nameof(DifficultyAttributes)}";
-                }
-
-                JsonSchema difficultySchema = generator.Generate(type);
-                difficultySchema.Title = name;
-                difficultySchema.AllowAdditionalProperties = true;
-                schema.Definitions.Add(name, difficultySchema);
+                JsonSchema difficultySchema = GenerateDifficultyAttributesSchema(generator, rulesetName,
+                    difficultyType, ref diffBaseSchema);
+                schema.Definitions.Add(difficultySchema.Title!, difficultySchema);
             }
 
             string json = schema.ToJson();
@@ -91,6 +87,77 @@ namespace CustomRulesetGenerator.SubCommands
             }
 
             return 0;
+        }
+
+        private static JsonSchema GeneratePerformanceAttributesSchema(JsonSchemaGenerator generator, string rulesetName,
+            Type? type, ref JsonSchema baseSchema)
+        {
+            if (type == null)
+            {
+                JsonSchema schema = generator.Generate(typeof(PerformanceAttributes));
+                schema.Title = $"{Capitalize(rulesetName)}{nameof(PerformanceAttributes)}";
+                schema.Properties.Clear();
+                schema.AllowAdditionalProperties = true;
+                schema.AllOf.Add(new JsonSchema() { Reference = baseSchema });
+                return schema;
+            }
+
+            JsonSchema performanceSchema = generator.Generate(type);
+            performanceSchema.Title = type.Name;
+            performanceSchema.Definitions.Clear();
+            foreach (JsonSchema allOfItem in performanceSchema.AllOf)
+            {
+                if (allOfItem.Reference != null)
+                {
+                    allOfItem.Reference = baseSchema;
+                }
+                else
+                {
+                    allOfItem.AllowAdditionalProperties = true;
+                    foreach (KeyValuePair<string, JsonSchemaProperty> prop in allOfItem.Properties)
+                    {
+                        prop.Value.IsRequired = true;
+                    }
+                }
+            }
+
+            return performanceSchema;
+        }
+
+        private static JsonSchema GenerateDifficultyAttributesSchema(JsonSchemaGenerator generator, string rulesetName,
+            Type? type, ref JsonSchema baseSchema)
+        {
+            if (type == null)
+            {
+                JsonSchema schema = generator.Generate(typeof(DifficultyAttributes));
+                schema.Title = $"{Capitalize(rulesetName)}{nameof(DifficultyAttributes)}";
+                schema.Properties.Clear();
+                schema.AllowAdditionalProperties = true;
+                schema.AllOf.Add(new JsonSchema() { Reference = baseSchema });
+                return schema;
+            }
+
+            JsonSchema difficultySchema = generator.Generate(type);
+            difficultySchema.Title = type.Name;
+            difficultySchema.AllowAdditionalItems = true;
+            difficultySchema.Definitions.Clear();
+            foreach (JsonSchema allOfItem in difficultySchema.AllOf)
+            {
+                if (allOfItem.Reference != null)
+                {
+                    allOfItem.Reference = baseSchema;
+                }
+                else
+                {
+                    allOfItem.AllowAdditionalProperties = true;
+                    foreach (KeyValuePair<string, JsonSchemaProperty> prop in allOfItem.Properties)
+                    {
+                        prop.Value.IsRequired = true;
+                    }
+                }
+            }
+
+            return difficultySchema;
         }
 
         private static string Capitalize(string s)
