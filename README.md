@@ -12,8 +12,18 @@ This project produces patched rulesets to add ruleset id for [g0v0-server](https
 | hishigata | [LumpBloom7/hishigata](https://github.com/LumpBloom7/hishigata) | hishigata  | 13        |
 | soyokaze! | [goodtrailer/soyokaze](https://github.com/goodtrailer/soyokaze) | soyokaze   | 14        |
 
+## Use CustomRulesetGenerator to generate metadata for rulesets
+
+Run
+
+```bash
+dotnet run --
+```
+
+to see available options.
+
 ## License
 
-All patches and workflows are licensed under the [AGPL-3.0 License](LICENSE).
+CustomRulesetGenerator, all patches and workflows are licensed under the [AGPL-3.0 License](LICENSE).
 
-Each ruleset has its own license. Refer to `LICENSE.{ruleset}.txt` for details.
+Each ruleset has its own license. Refer to `ruleset-licenses/{ruleset}.txt` for details.

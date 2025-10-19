@@ -21,27 +21,22 @@ jobs:
         include:
           - id: tau
             repository: taulazer/tau
-            patch: patch-tau.patch
             project: osu.Game.Rulesets.Tau/osu.Game.Rulesets.Tau.csproj
             dll: osu.Game.Rulesets.Tau.dll
           - id: sentakki
             repository: LumpBloom7/sentakki
-            patch: patch-sentakki.patch
             project: osu.Game.Rulesets.Sentakki/osu.Game.Rulesets.Sentakki.csproj
             dll: osu.Game.Rulesets.Sentakki.dll
           - id: rush
             repository: Beamographic/rush
-            patch: patch-rush.patch
             project: osu.Game.Rulesets.Rush/osu.Game.Rulesets.Rush.csproj
             dll: osu.Game.Rulesets.Rush.dll
           - id: hishigata
             repository: LumpBloom7/hishigata
-            patch: patch-hishigata.patch
             project: osu.Game.Rulesets.Hishigata/osu.Game.Rulesets.Hishigata.csproj
             dll: osu.Game.Rulesets.Hishigata.dll
           - id: soyokaze
             repository: goodtrailer/soyokaze
-            patch: patch-soyokaze!.patch
             project: osu.Game.Rulesets.Soyokaze/osu.Game.Rulesets.Soyokaze.csproj
             dll: osu.Game.Rulesets.Soyokaze.dll
     steps:
@@ -61,7 +56,7 @@ jobs:
 
       - name: Apply patch
         run: |
-          git -C repos/${{ matrix.id }} apply < "${{ github.workspace }}/${{ matrix.patch }}"
+          git -C repos/${{ matrix.id }} apply < "${{ github.workspace }}/patches/${{ matrix.id }}.patch"
 
       - name: Restore and publish
         working-directory: repos/${{ matrix.id }}
