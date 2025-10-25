@@ -10,6 +10,16 @@ namespace CustomRulesetGenerator
     {
         public static int CompareVersionDates(string v1, string v2)
         {
+            if (string.IsNullOrEmpty(v1))
+            {
+                return string.IsNullOrEmpty(v2) ? 0 : -1;
+            }
+
+            if (string.IsNullOrEmpty(v2))
+            {
+                return 1;
+            }
+
             (DateTime date1, int patch1) = ParseVersion(v1);
             (DateTime date2, int patch2) = ParseVersion(v2);
 
