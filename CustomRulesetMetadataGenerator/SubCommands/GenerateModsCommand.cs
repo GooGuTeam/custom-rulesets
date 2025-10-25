@@ -35,7 +35,7 @@ namespace CustomRulesetGenerator.SubCommands
                 return 1;
             }
 
-            IEnumerable<Ruleset> rulesets = rulesetManager.GetAllRulesets();
+            IEnumerable<Ruleset> rulesets = rulesetManager.GetAllRulesets().OrderBy(r => r.RulesetInfo.OnlineID);
             string dumped = JsonConvert.SerializeObject(
                 rulesets.Select(r => new
                 {

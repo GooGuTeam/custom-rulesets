@@ -34,7 +34,7 @@ namespace CustomRulesetGenerator.SubCommands
                 return 1;
             }
 
-            IEnumerable<Ruleset> rulesets = rulesetManager.GetAllRulesets();
+            IEnumerable<Ruleset> rulesets = rulesetManager.GetAllRulesets().OrderBy(r => r.RulesetInfo.OnlineID);
 
             NewtonsoftJsonSchemaGeneratorSettings settings = new()
             {
