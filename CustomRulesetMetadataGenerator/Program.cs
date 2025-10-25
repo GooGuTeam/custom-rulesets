@@ -45,7 +45,7 @@ namespace CustomRulesetGenerator
             HelpText? helpText = HelpText.AutoBuild(result, h =>
             {
                 h.AdditionalNewLineAfterOption = false;
-                h.Heading = "CustomRulesetGenerator";
+                h.Heading = "CustomRulesetMetadataGenerator";
                 h.Copyright = "Copyright (c) 2025 GooGuTeam";
                 return HelpText.DefaultParsingErrorsHandler(result, h);
             }, e => e);
