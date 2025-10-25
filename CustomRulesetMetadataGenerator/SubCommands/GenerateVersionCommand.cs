@@ -14,26 +14,18 @@ namespace CustomRulesetGenerator.SubCommands
         HelpText = "Generate rulesets version and MD5-hash for each ruleset found in the specified path.")]
     public class GenerateVersionOptions : BaseOptions
     {
-        [Option("current", HelpText = "Current version JSON File path.", Required = false, Default = null)]
+        [Value(1, MetaName = "version", Required = true, HelpText = "The current version of the ruleset.")]
+        public required string Version { get; set; }
+
+        [Option("current", HelpText = "Existed JSON File path.", Required = false, Default = null)]
         public string? CurrentVersionFile { get; set; }
     }
 
     public class VersionEntry
     {
-        [JsonProperty("$latest-version")] public string LatestVersion { get; set; } = "";
+        [JsonProperty("latest-version")] public string LatestVersion { get; set; } = "";
 
-        [JsonExtensionData] public Dictionary<string, Newtonsoft.Json.Linq.JToken> Versions { get; set; } = new();
-
-        public Dictionary<string, string> GetVersionsAsStrings()
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            foreach (KeyValuePair<string, JToken> kv in Versions.Where(kv => kv.Value.Type == JTokenType.String))
-            {
-                result[kv.Key] = kv.Value.ToString();
-            }
-
-            return result;
-        }
+        [JsonProperty("versions")] public Dictionary<string, string> Versions { get; set; } = new();
     }
 
     public class GenerateVersionCommand(GenerateVersionOptions options) : ISubCommand
@@ -64,7 +56,7 @@ namespace CustomRulesetGenerator.SubCommands
             {
                 versionEntries = new Dictionary<string, VersionEntry>();
             }
-            
+
             foreach (Ruleset ruleset in rulesets)
             {
                 string rulesetName = ruleset.RulesetInfo.ShortName;
@@ -74,9 +66,9 @@ namespace CustomRulesetGenerator.SubCommands
                     versionEntries[rulesetName] = value;
                 }
 
-                UpdateVersionEntry(ruleset, value);
+                UpdateVersionEntry(ruleset, value, options.Version);
             }
-            
+
             string outputJson = JsonConvert.SerializeObject(versionEntries, Formatting.Indented);
             if (options.OutputPath != null)
             {
@@ -90,10 +82,9 @@ namespace CustomRulesetGenerator.SubCommands
             return 0;
         }
 
-        private static void UpdateVersionEntry(Ruleset ruleset, VersionEntry entry)
+        private static void UpdateVersionEntry(Ruleset ruleset, VersionEntry entry, string newVersion)
         {
             string md5 = GetFileMd5(GetRulesetAssembly(ruleset));
-            string newVersion = DateTime.UtcNow.ToString("yyyy.MM.dd");
             entry.Versions[newVersion] = md5;
             if (VersionHelper.CompareVersionDates(newVersion, entry.LatestVersion) > 0)
             {
