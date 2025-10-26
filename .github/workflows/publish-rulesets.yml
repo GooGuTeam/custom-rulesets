@@ -169,7 +169,7 @@ jobs:
       - name: Generate definitions
         run: |
           dotnet run --project CustomRulesetMetadataGenerator -- mods ./current-rulesets -o ../server-repo/static/mods.json
-          dotnet run --project CustomRulesetMetadataGenerator -- ruleset-version ./current-rulesets ${{ steps.version.outputs.tag }} -o ../server-repo/static/custom_ruleset_versions.json --current ../server-repo/static/custom_ruleset_versions.json
+          dotnet run --project CustomRulesetMetadataGenerator -- ruleset-version ./current-rulesets ${{ steps.version.outputs.tag }} -o ../server-repo/static/custom_ruleset_version_hash.json --current ../server-repo/static/custom_ruleset_version_hash.json
           dotnet run --project CustomRulesetMetadataGenerator -- schemas ./current-rulesets -o ./schema.json
         working-directory: workflow-repo
 
