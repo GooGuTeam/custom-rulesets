@@ -103,7 +103,7 @@ namespace CustomRulesetGenerator
         
         public IEnumerable<Ruleset> GetAllRulesets()
         {
-            return _rulesets.Values;
+            return _rulesets.Values.Distinct();
         }
     }
 }
