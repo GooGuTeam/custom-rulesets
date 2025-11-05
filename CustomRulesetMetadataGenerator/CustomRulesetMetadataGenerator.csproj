@@ -13,9 +13,9 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NJsonSchema" Version="11.5.1" />
     <PackageReference Include="NJsonSchema.NewtonsoftJson" Version="11.5.1" />
-    <PackageReference Include="ppy.osu.Game" Version="2025.1029.0" />
+    <PackageReference Include="ppy.osu.Game" Version="2025.1105.0" />
     <PackageReference Include="ppy.osu.Game.Rulesets.Catch" Version="2025.1029.0" />
-    <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2025.1029.0" />
+    <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2025.1105.0" />
     <PackageReference Include="ppy.osu.Game.Rulesets.Osu" Version="2025.1029.0" />
     <PackageReference Include="ppy.osu.Game.Rulesets.Taiko" Version="2025.1029.0" />
   </ItemGroup>
