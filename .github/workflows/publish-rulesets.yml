@@ -186,7 +186,7 @@ jobs:
       - name: Create pull request with changes
         uses: peter-evans/create-pull-request@v6
         with:
-          title: "chore(custom-ruleset): Update custom ruleset definitions"
+          title: "chore(custom-ruleset): update custom ruleset definitions"
           body: "Automated update of custom ruleset definitions. Version: ${{ steps.version.outputs.tag }}"
           branch: "chore/update-definitions"
           commit-message: "chore(custom-ruleset): Update custom ruleset definitions"
