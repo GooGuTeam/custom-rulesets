@@ -4,4 +4,8 @@ updates:
   directory: "/"
   schedule:
     interval: daily
+  groups:
+    osu-game:
+      patterns:
+          - "ppy.osu.Game.*"
   open-pull-requests-limit: 10
