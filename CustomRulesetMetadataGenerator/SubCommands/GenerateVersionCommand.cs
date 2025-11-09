@@ -85,6 +85,11 @@ namespace CustomRulesetGenerator.SubCommands
         private static void UpdateVersionEntry(Ruleset ruleset, VersionEntry entry, string newVersion)
         {
             string md5 = GetFileMd5(GetRulesetAssembly(ruleset));
+            foreach (KeyValuePair<string, string> pair in entry.Versions.Where(pair => pair.Value == md5))
+            {
+                entry.Versions.Remove(pair.Key);
+            }
+
             entry.Versions[newVersion] = md5;
             if (VersionHelper.CompareVersionDates(newVersion, entry.LatestVersion) > 0)
             {
