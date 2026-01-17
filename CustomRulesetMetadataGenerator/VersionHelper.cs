@@ -29,23 +29,35 @@ namespace CustomRulesetGenerator
 
         private static (DateTime Date, int Patch) ParseVersion(string version)
         {
-            // e.g. "2025.1019.2", "2025.1019"
+            // e.g. "2025.1019.2", "2025.1019", "2026.117.0"
             string[] parts = version.Split('.', StringSplitOptions.RemoveEmptyEntries);
+
             if (parts.Length <= 1)
                 throw new FormatException($"Invalid version format: {version}");
 
-            if (!DateTime.TryParseExact(parts[0] + parts[1], "yyyyMMdd", CultureInfo.InvariantCulture,
-                    DateTimeStyles.None, out DateTime date))
+            // complete to 4 digits (e.g. 117 -> 0117)
+            string monthDay = parts[1].PadLeft(4, '0');
+
+            if (!DateTime.TryParseExact(
+                    parts[0] + monthDay,
+                    "yyyyMMdd",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out DateTime date))
+            {
                 throw new FormatException($"Failed to parse date: {version}");
+            }
 
             int patch = 0;
+
             if (parts.Length <= 2)
             {
                 return (date, patch);
             }
 
-            bool success = TryParse(parts[2], out patch);
-            return !success ? throw new FormatException($"Failed to parse patch: {version}") : (date, patch);
+            return !TryParse(parts[2], out patch)
+                ? throw new FormatException($"Failed to parse patch: {version}")
+                : (date, patch);
         }
     }
 }
