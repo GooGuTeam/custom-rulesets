@@ -7,5 +7,5 @@ updates:
   groups:
     osu-game:
       patterns:
-          - "ppy.osu.Game.*"
+          - "ppy.osu.Game*"
   open-pull-requests-limit: 10
