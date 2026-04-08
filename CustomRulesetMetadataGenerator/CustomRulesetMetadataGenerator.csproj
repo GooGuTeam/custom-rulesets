@@ -11,8 +11,8 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="NJsonSchema" Version="11.5.2" />
-    <PackageReference Include="NJsonSchema.NewtonsoftJson" Version="11.5.2" />
+    <PackageReference Include="NJsonSchema" Version="11.6.0" />
+    <PackageReference Include="NJsonSchema.NewtonsoftJson" Version="11.6.0" />
     <PackageReference Include="ppy.osu.Game" Version="2026.317.0" />
     <PackageReference Include="ppy.osu.Game.Rulesets.Catch" Version="2026.317.0" />
     <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2026.317.0" />
