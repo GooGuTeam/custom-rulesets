@@ -4,7 +4,6 @@
 
 using CommandLine;
 using Newtonsoft.Json;
-using osu.Framework.Bindables;
 using osu.Game.Configuration;
 using osu.Game.Extensions;
 using osu.Game.Rulesets;
@@ -107,7 +106,9 @@ namespace CustomRulesetGenerator.SubCommands
                         Type = GetJsonType(netType),
                         Label = settingsSource.Label.ToString(),
                         Description = settingsSource.Description.ToString(),
-                        DefaultValue = ((dynamic)bindable).Default,
+                        DefaultValue = netType?.IsEnum == true
+                            ? Convert.ToInt32(((dynamic)bindable).Default).ToString()
+                            : ((dynamic)bindable).Default,
                     };
                 }
             }
