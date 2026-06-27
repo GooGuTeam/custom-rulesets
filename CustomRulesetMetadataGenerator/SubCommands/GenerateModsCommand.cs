@@ -106,6 +106,9 @@ namespace CustomRulesetGenerator.SubCommands
                         Type = GetJsonType(netType),
                         Label = settingsSource.Label.ToString(),
                         Description = settingsSource.Description.ToString(),
+                        DefaultValue = netType?.IsEnum == true
+                            ? Convert.ToInt32(((dynamic)bindable).Default).ToString()
+                            : ((dynamic)bindable).Default,
                     };
                 }
             }
