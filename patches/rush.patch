@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000..5c930ea
 --- /dev/null
 +++ b/osu.Game.Rulesets.Rush/Difficulty/RushLegacyScoreSimulator.cs
-@@ -0,0 +1,30 @@
+@@ -0,0 +1,25 @@
 +// Copyright (c) Shane Woolcock. Licensed under the MIT Licence.
 +// See the LICENCE file in the repository root for full licence text.
 +
@@ -16,6 +16,8 @@ index 0000000..5c930ea
 +{
 +    public class RushLegacyScoreSimulator : ILegacyScoreSimulator
 +    {
++        // These methods are not implemented because they are not called for scores from osu!lazer.
++        // Only legacy scores (from osu!stable) require these methods to be implemented.
 +        public LegacyScoreAttributes Simulate(IWorkingBeatmap workingBeatmap, IBeatmap playableBeatmap)
 +        {
 +            throw new System.NotImplementedException();
@@ -23,14 +25,7 @@ index 0000000..5c930ea
 +
 +        public double GetLegacyScoreMultiplier(IReadOnlyList<Mod> mods, LegacyBeatmapConversionDifficultyInfo difficulty)
 +        {
-+            double multiplier = 1.0;
-+
-+            foreach (var mod in mods)
-+            {
-+                multiplier *= mod.ScoreMultiplier;
-+            }
-+
-+            return multiplier;
++            throw new System.NotImplementedException();
 +        }
 +    }
 +}

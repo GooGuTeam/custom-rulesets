@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000..6eaf3c5
 --- /dev/null
 +++ b/osu.Game.Rulesets.Soyokaze/Difficulty/SoyokazeLegacyScoreSimulator.cs
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,21 @@
 +using System.Collections.Generic;
 +using osu.Game.Beatmaps;
 +using osu.Game.Rulesets.Mods;
@@ -13,6 +13,8 @@ index 0000000..6eaf3c5
 +
 +public class SoyokazeLegacyScoreSimulator : ILegacyScoreSimulator
 +{
++    // These methods are not implemented because they are not called for scores from osu!lazer.
++    // Only legacy scores (from osu!stable) require these methods to be implemented.
 +    public LegacyScoreAttributes Simulate(IWorkingBeatmap workingBeatmap, IBeatmap playableBeatmap)
 +    {
 +        throw new System.NotImplementedException();
@@ -20,14 +22,7 @@ index 0000000..6eaf3c5
 +
 +    public double GetLegacyScoreMultiplier(IReadOnlyList<Mod> mods, LegacyBeatmapConversionDifficultyInfo difficulty)
 +    {
-+        double multiplier = 1.0;
-+
-+        foreach (var mod in mods)
-+        {
-+            multiplier *= mod.ScoreMultiplier;
-+        }
-+
-+        return multiplier;
++        throw new System.NotImplementedException();
 +    }
 +}
 diff --git a/osu.Game.Rulesets.Soyokaze/SoyokazeRuleset.cs b/osu.Game.Rulesets.Soyokaze/SoyokazeRuleset.cs
