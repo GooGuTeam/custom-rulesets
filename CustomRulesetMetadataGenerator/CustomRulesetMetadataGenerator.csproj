@@ -13,11 +13,11 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NJsonSchema" Version="11.6.1" />
     <PackageReference Include="NJsonSchema.NewtonsoftJson" Version="11.6.1" />
-    <PackageReference Include="ppy.osu.Game" Version="2026.621.0" />
-    <PackageReference Include="ppy.osu.Game.Rulesets.Catch" Version="2026.621.0" />
-    <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2026.621.0" />
-    <PackageReference Include="ppy.osu.Game.Rulesets.Osu" Version="2026.621.0" />
-    <PackageReference Include="ppy.osu.Game.Rulesets.Taiko" Version="2026.621.0" />
+    <PackageReference Include="ppy.osu.Game" Version="2026.702.1" />
+    <PackageReference Include="ppy.osu.Game.Rulesets.Catch" Version="2026.702.1" />
+    <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2026.702.1" />
+    <PackageReference Include="ppy.osu.Game.Rulesets.Osu" Version="2026.702.1" />
+    <PackageReference Include="ppy.osu.Game.Rulesets.Taiko" Version="2026.702.1" />
   </ItemGroup>
 
 </Project>
