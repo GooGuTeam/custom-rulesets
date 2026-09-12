@@ -15,8 +15,40 @@ permissions:
   contents: write
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      assembly-version: ${{ steps.version.outputs.assembly-version }}
+    steps:
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            version="${GITHUB_REF_NAME#v}"
+          else
+            # Non-release builds use the same date-based scheme as the release tags (e.g. 2026.912.0).
+            version="$(date -u '+%Y').$((10#$(date -u '+%m')))$(date -u '+%d').0"
+          fi
+
+          # AssemblyVersion only accepts 2-4 numeric components.
+          numeric="${version%%-*}"
+          case "$(awk -F. '{ print NF }' <<< "$numeric")" in
+            1) numeric="$numeric.0.0.0" ;;
+            2) numeric="$numeric.0.0" ;;
+            3) numeric="$numeric.0" ;;
+          esac
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "assembly-version=$numeric" >> "$GITHUB_OUTPUT"
+          echo "Building version $version (assembly version $numeric)"
+
   build:
     runs-on: ubuntu-latest
+    needs: version
     strategy:
       fail-fast: false
       matrix:
@@ -62,9 +94,35 @@ jobs:
 
       - name: Restore and publish
         working-directory: repos/${{ matrix.id }}
+        env:
+          RULESET_VERSION: ${{ needs.version.outputs.version }}
+          RULESET_ASSEMBLY_VERSION: ${{ needs.version.outputs.assembly-version }}
         run: |
           dotnet restore "${{ matrix.project }}"
-          dotnet publish "${{ matrix.project }}" --configuration Release --output "${{ github.workspace }}/build/${{ matrix.id }}"
+          dotnet publish "${{ matrix.project }}" --configuration Release --output "${{ github.workspace }}/build/${{ matrix.id }}" \
+            -p:Version="$RULESET_VERSION" \
+            -p:AssemblyVersion="$RULESET_ASSEMBLY_VERSION" \
+            -p:FileVersion="$RULESET_ASSEMBLY_VERSION"
+
+      - name: Verify ruleset DLL version
+        env:
+          RULESET_DLL: build/${{ matrix.id }}/${{ matrix.dll }}
+          RULESET_ASSEMBLY_VERSION: ${{ needs.version.outputs.assembly-version }}
+        run: |
+          cat > /tmp/assembly-version.fsx <<'EOF'
+          open System
+          open System.Reflection
+
+          let expected = Environment.GetEnvironmentVariable "RULESET_ASSEMBLY_VERSION"
+          let actual = (AssemblyName.GetAssemblyName(Environment.GetEnvironmentVariable "RULESET_DLL")).Version
+
+          printfn "Assembly version of %s: %O" (Environment.GetEnvironmentVariable "RULESET_DLL") actual
+
+          if actual.ToString() <> expected then
+              eprintfn "Expected assembly version %s, got %O" expected actual
+              exit 1
+          EOF
+          dotnet fsi /tmp/assembly-version.fsx
 
       - name: Collect ruleset DLL
         run: |

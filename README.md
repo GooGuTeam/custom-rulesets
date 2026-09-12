@@ -12,6 +12,15 @@ This project produces patched rulesets to add ruleset id for [g0v0-server](https
 | hishigata | [LumpBloom7/hishigata](https://github.com/LumpBloom7/hishigata) | hishigata  | 13        |
 | soyokaze! | [goodtrailer/soyokaze](https://github.com/goodtrailer/soyokaze) | soyokaze   | 14        |
 
+## Releases
+
+Pushing a tag (for example `2026.912.1`) builds every ruleset and publishes the DLLs as a GitHub release.
+
+The tag is stamped into the built assemblies, so `Assembly.GetName().Version` returns `{tag}.0`
+(for example `2026.912.1.0`) and `AssemblyInformationalVersion` returns `{tag}+{upstream commit}`.
+Builds which are not triggered by a tag (scheduled runs and pushes touching `patches/**`) are stamped
+with the date-based version of the day instead (for example `2026.912.0`) and are not released.
+
 ## Use CustomRulesetMetadataGenerator to generate metadata for rulesets
 
 Run
