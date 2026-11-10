@@ -75,15 +75,15 @@ jobs:
             dll: osu.Game.Rulesets.Soyokaze.dll
     steps:
       - name: Checkout workflow repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
       - name: Checkout ${{ matrix.id }} repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: ${{ matrix.repository }}
           path: repos/${{ matrix.id }}
@@ -135,7 +135,7 @@ jobs:
           cp "$source" "artifacts/${{ matrix.id }}/${{ matrix.dll }}"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.id }}
           path: artifacts/${{ matrix.id }}
@@ -146,10 +146,10 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: release-assets
 
@@ -186,23 +186,23 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Install .NET 10.0.x
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: "10.0.x"
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: workflow-repo
 
       - name: Checkout server repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: GooGuTeam/g0v0-server
           path: server-repo
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: release-assets
 
@@ -242,7 +242,7 @@ jobs:
         working-directory: server-repo
 
       - name: Create pull request with changes
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
           title: "chore(custom-ruleset): update custom ruleset definitions"
           body: "Automated update of custom ruleset definitions. Version: ${{ steps.version.outputs.tag }}"
