@@ -51,3 +51,27 @@ index 80560e5..3401cc4 100644
          public const string SHORT_NAME = "tau";
  
          public override string RulesetAPIVersionSupported => CURRENT_RULESET_API_VERSION;
+diff --git a/osu.Game.Rulesets.Tau/Resources/Shaders/sh_VisualizerFade.fs b/osu.Game.Rulesets.Tau/Resources/Shaders/sh_VisualizerFade.fs
+--- a/osu.Game.Rulesets.Tau/Resources/Shaders/sh_VisualizerFade.fs	(revision 221990ebb056ba5c677022c90f10bc700a347aec)
++++ b/osu.Game.Rulesets.Tau/Resources/Shaders/sh_VisualizerFade.fs	(date 1794298466323)
+@@ -2,7 +2,7 @@
+ #include "sh_Masking.h"
+ #include "sh_TextureWrapping.h"
+ 
+-layout(location = 5) in highp vec2 v_Position;
++layout(location = 15) in highp vec2 v_Position;
+ layout(location = 2) in mediump vec2 v_TexCoord;
+ 
+ layout(std140, set = 1, binding = 0) uniform m_visualizerParameters {
+diff --git a/osu.Game.Rulesets.Tau/Resources/Shaders/sh_VisualizerPositionAndColour.vs b/osu.Game.Rulesets.Tau/Resources/Shaders/sh_VisualizerPositionAndColour.vs
+--- a/osu.Game.Rulesets.Tau/Resources/Shaders/sh_VisualizerPositionAndColour.vs	(revision 221990ebb056ba5c677022c90f10bc700a347aec)
++++ b/osu.Game.Rulesets.Tau/Resources/Shaders/sh_VisualizerPositionAndColour.vs	(date 1794298462744)
+@@ -11,7 +11,7 @@
+ layout(location = 2) out mediump vec2 v_TexCoord;
+ layout(location = 3) out mediump vec4 v_TexRect;
+ layout(location = 4) out mediump vec2 v_BlendRange;
+-layout(location = 5) out highp vec2 v_Position;
++layout(location = 15) out highp vec2 v_Position;
+ 
+ void main(void)
+ {
